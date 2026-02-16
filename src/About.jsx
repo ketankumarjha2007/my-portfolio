@@ -10,7 +10,7 @@ function About() {
             <p>
                 Hi everyone! I’m <strong>Ketan Kumar Jha</strong>, currently pursuing my
                 undergraduate studies at <strong>BMS Institute of Technology & Management,
-                Bengaluru</strong>. I’m in my <strong>1st semester</strong> and passionate
+                Bengaluru</strong>. I’m in my <strong>2nd semester</strong> and passionate
                 about learning and building with technology.
             </p>
 
