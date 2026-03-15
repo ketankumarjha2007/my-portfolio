@@ -42,12 +42,12 @@ function Project() {
                 </div>
 
                 <div className="project-card">
-                    <h3>Carbon Footprint Calculator</h3>
+                    <h3>Carbon Footprint and AQI monitoring platform</h3>
                     <p>
-                        Calculates carbon footprint based on user inputs to promote awareness.
+                        Calculates carbon footprint and AQI based on user inputs and city details to promote awareness.
                     </p>
                     <a
-                        href="https://github.com/ketankumarjha2007/Carbon-footprint-calcultor"
+                        href="https://github.com/ketankumarjha2007/Carbon_Footprint"
                         target="_blank"
                         rel="noreferrer"
                         className="project-btn"
