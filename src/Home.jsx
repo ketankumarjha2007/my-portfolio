@@ -1,77 +1,106 @@
-import Navbar from "./Navbar";
+import { useEffect, useState } from "react";
 import { Typewriter } from "react-simple-typewriter";
 import "./Home.css";
-import profile from "./assets/profile.jpeg";
+import profile from "./assets/profile.jpg";
 
 function Home() {
-    return (
-        <>
-            <header className="hero">
-                <Navbar />
+  const [showResume, setShowResume] = useState(false);
 
-                <div className="hero-content">
-                    <div className="hero-text">
-                        <h1>
-                            Hi, I’m{" "}
-                            <span className="highlight">
-                                <Typewriter
-                                    words={[
-                                        "Ketan",
-                                        "a Frontend Developer",
-                                        "a React Developer",
-                                    ]}
-                                    loop={0}
-                                    cursor
-                                    cursorStyle="|"
-                                    typeSpeed={80}
-                                    deleteSpeed={60}
-                                    delaySpeed={1500}
-                                />
-                            </span>
-                        </h1>
-                    </div>
+  useEffect(() => {
+    const move = (e) => {
+      const glow = document.querySelector(".cursor-glow");
+      if (glow) {
+        glow.style.left = e.clientX + "px";
+        glow.style.top = e.clientY + "px";
+      }
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, []);
 
-                    <div className="hero-image">
-                        <img src={profile} alt="Ketan profile" />
-                    </div>
-                </div>
-            </header>
+  return (
+    <>
+      <div className="cursor-glow"></div>
+      {showResume && (
+        <div className="modal-overlay" onClick={() => setShowResume(false)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close-btn"
+              onClick={() => setShowResume(false)}
+            >
+              ✖
+            </button>
+            <iframe
+              src="/resume.pdf"
+              title="Resume"
+              className="resume-frame"
+            ></iframe>
+            <a href="/resume.pdf" download="KETAN_RESUME.pdf">
+              <button className="btn primary download-btn">
+                ⬇ Download Resume
+              </button>
+            </a>
+          </div>
+        </div>
+      )}
 
-            <section className="intro">
-                <h2 className="intro-title">LET ME INTRODUCE MYSELF</h2>
+      <section className="hero">
+        <div className="hero-container">
+          <div className="hero-left">
+            <h1>
+              Hi, I’m <span className="name">Ketan</span>
+            </h1>
 
-                <p>
-                    I’m <strong>Ketan Kumar Jha</strong>, a passionate learner and aspiring
-                    <strong> Software Engineer</strong> who enjoys transforming ideas into
-                    clean, functional, and user-friendly web applications.
-                </p>
+            <h2 className="typing">
+              <Typewriter
+                words={[
+                  "a Full Stack Developer",
+                  "a Problem Solver",
+                  "a Tech Enthusiast",
+                ]}
+                loop={0}
+                cursor
+                cursorStyle="|"
+                typeSpeed={70}
+                deleteSpeed={50}
+                delaySpeed={1200}
+              />
+            </h2>
 
-                <p>
-                    Over time, I’ve explored different programming languages and technologies
-                    and found my interest in building interactive user interfaces and
-                    scalable web solutions.
-                </p>
+            <p className="desc">
+              I craft high-performance web apps with stunning UI and scalable backend systems.
+            </p>
 
-                <p>
-                    I’m proficient in <strong>HTML, CSS, JavaScript, C, C++</strong>, and
-                    <strong> Python</strong>, and I’m currently learning
-                    <strong> React</strong> to strengthen my frontend development skills.
-                </p>
+            {/* BUTTONS */}
+            <div className="buttons">
+              <a href="/project" className="btn primary">Projects</a>
+              <button
+                className="btn ghost"
+                onClick={() => setShowResume(true)}
+              >
+                👁 View Resume
+              </button>
 
-                <p>
-                    My key areas of interest include <strong>Web Development</strong>,
-                    building real-world projects, and continuously improving my
-                    problem-solving abilities.
-                </p>
+              <a href="/resume.pdf" download="KETAN_RESUME.pdf">
+                <button className="btn primary">
+                  ⬇ Download Resume
+                </button>
+              </a>
+            </div>
+          </div>
+          <div className="hero-right">
+            <div className="profile-card">
+              <img src={profile} alt="profile" />
+            </div>
+          </div>
 
-                <p>
-                    Whenever possible, I enjoy building projects using modern tools and
-                    frameworks while learning best practices to write clean and efficient
-                    code.
-                </p>
-            </section>
-        </>
-    );
+        </div>
+      </section>
+    </>
+  );
 }
 
 export default Home;

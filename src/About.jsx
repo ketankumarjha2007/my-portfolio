@@ -1,62 +1,159 @@
 import "./About.css";
+import { useEffect } from "react";
+
+import {
+    FaHtml5, FaCss3Alt, FaJs, FaReact, FaPython,
+    FaNodeJs, FaGitAlt, FaChrome, FaCode
+} from "react-icons/fa";
 
 function About() {
-    return (
-        <section className="about-section">
-            <h1 className="about-title">
-                Know Who <span>I'M</span>
-            </h1>
 
+    useEffect(() => {
+        const fadeEls = document.querySelectorAll(".fade");
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                }
+            });
+        }, { threshold: 0.15 });
+
+        fadeEls.forEach(el => observer.observe(el));
+        const magneticEls = document.querySelectorAll(".magnetic");
+        const handlers = [];
+
+        magneticEls.forEach(el => {
+            const move = (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = (e.clientX - rect.left - rect.width / 2) / 8;
+                const y = (e.clientY - rect.top - rect.height / 2) / 8;
+                el.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+            };
+
+            const leave = () => {
+                el.style.transform = "translate(0,0) scale(1)";
+            };
+
+            el.addEventListener("mousemove", move);
+            el.addEventListener("mouseleave", leave);
+
+            handlers.push({ el, move, leave });
+        });
+        const glow = document.querySelector(".cursor-glow");
+
+        const moveGlow = (e) => {
+            glow.style.left = e.clientX + "px";
+            glow.style.top = e.clientY + "px";
+        };
+
+        window.addEventListener("mousemove", moveGlow);
+
+        return () => {
+            fadeEls.forEach(el => observer.unobserve(el));
+            handlers.forEach(({ el, move, leave }) => {
+                el.removeEventListener("mousemove", move);
+                el.removeEventListener("mouseleave", leave);
+            });
+            window.removeEventListener("mousemove", moveGlow);
+        };
+
+    }, []);
+
+    return (
+        <section className="about">
+            <div className="cursor-glow"></div>
+
+<<<<<<< HEAD
             <p>
                 Hi everyone! I’m <strong>Ketan Kumar Jha</strong>, currently pursuing my
                 undergraduate studies at <strong>BMS Institute of Technology & Management,
                 Bengaluru</strong>. I’m in my <strong>2nd semester</strong> and passionate
                 about learning and building with technology.
             </p>
+=======
+            <div className="about-wrapper">
+                <div className="about-left fade">
+                    <h1>About</h1>
+>>>>>>> d1abeca (added many features and improve UI)
 
-            <p>
-                I have a strong foundation in <strong>HTML, CSS, JavaScript, C, C++</strong>,
-                and <strong>Python</strong>. I have built <strong>6 projects</strong> so far
-                and I’m currently learning <strong>React</strong> to develop modern and
-                interactive web applications.
-            </p>
+                    <p className="tagline">
+                        Building systems that scale. Designing experiences that last.
+                    </p>
 
-            <p>
-                Apart from coding, here are a few things I enjoy doing:
-            </p>
+                    <div className="line"></div>
 
-            <ul className="about-hobbies">
-                <li>Playing Games</li>
-                <li>Building and Exploring Projects</li>
-                <li>Learning New Technologies</li>
-                <li>Improving Myself Every Day</li>
-            </ul>
+                    <p className="highlight">
+                        I am <strong>Ketan Kumar Jha</strong> — crafting fast,
+                        scalable, and production-ready web systems.
+                    </p>
+                    <br />
+                    <p>
+                        Pursuing B.Tech at <strong>BMS Institute of Technology</strong> (2025),
+                        focused on Data Structures and system design,currently in my <strong>2nd sem</strong>.
+                    </p>
+                    <br />
+                    <p>
+                        I focus on performance, clean architecture,
+                        and seamless user experiences.
+                    </p>
+                </div>
+                <div className="about-right fade">
 
-            <p className="quote">
-                “Strive to build things that make a difference!”
-            </p>
+                    <h2>Skills</h2>
 
-            <h2 className="signature">— Ketan Kumar Jha</h2>
+                    <div className="skills glass">
 
-            <h2 className="section-title">Professional Skillset</h2>
-            <div className="skills-grid">
-                <span>HTML</span>
-                <span>CSS</span>
-                <span>JavaScript</span>
-                <span>React</span>
-                <span>Python</span>
-                <span>C</span>
-                <span>C++</span>
-                <span>Git</span>
+                        <span className="magnetic"><FaHtml5 /> HTML</span>
+                        <span className="magnetic"><FaCss3Alt /> CSS</span>
+                        <span className="magnetic"><FaJs /> JavaScript</span>
+                        <span className="magnetic"><FaReact /> React</span>
+                        <span className="magnetic"><FaPython /> Python</span>
+
+                        <span className="magnetic text-chip"><FaCode /> C</span>
+                        <span className="magnetic text-chip"><FaCode /> C++</span>
+
+                        <span className="magnetic"><FaNodeJs /> Node.js</span>
+                        <span className="magnetic text-chip">MongoDB</span>
+                        <span className="magnetic text-chip">MySQL</span>
+                        <span className="magnetic"><FaGitAlt /> Git</span>
+
+                    </div>
+
+                    <h2 className="tools-title">Tools</h2>
+
+                    <div className="skills glass">
+                        <span className="magnetic text-chip">VS Code</span>
+                        <span className="magnetic text-chip">GitHub</span>
+                        <span className="magnetic text-chip">Vercel</span>
+                        <span className="magnetic text-chip">Railway</span>
+                        <span className="magnetic text-chip">Render</span>
+                        <span className="magnetic"><FaChrome /> Chrome</span>
+                    </div>
+
+                    <h2 className="journey-title">Journey</h2>
+
+                    <div className="timeline">
+                        <div className="timeline-item">
+                            <span> 2025</span>
+                            <p>Started B.Tech and entered development</p>
+                        </div>
+
+                        <div className="timeline-item">
+                            <span> 2025 — Present</span>
+                            <p>Building projects and mastering DSA</p>
+                        </div>
+
+                        <div className="timeline-item future">
+                            <span> Next</span>
+                            <p>Building impactful scalable products</p>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
 
-            <h2 className="section-title">Tools I Use</h2>
-            <div className="skills-grid">
-                <span>VS Code</span>
-                <span>GitHub</span>
-                <span>Chrome</span>
-                <span>Windows</span>
-            </div>
         </section>
     );
 }

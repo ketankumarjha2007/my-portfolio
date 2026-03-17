@@ -1,132 +1,235 @@
-.about-section {
-    min-height: 100vh;
-    padding: 100px 20px;
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    background-image: url("/background.jpg");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    position: relative;
-    color: #e5e7eb;
-    animation: fadeIn 1s ease-in;
+.about {
+  position: relative;
+  padding: 120px 10%;
+  min-height: 100vh;
+  overflow: hidden;
+  color: #e5e7eb;
+
+  background: radial-gradient(circle at 20% 20%, #0f172a, #020617);
 }
 
-
-.about-title {
-    font-size: 52px;
-    text-align: center;
-    margin-bottom: 40px;
-    letter-spacing: 1px;
+.about::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("https://www.transparenttextures.com/patterns/asfalt-light.png");
+  opacity: 0.04;
 }
 
-.about-title span {
-    color: yellow;
+.about::before {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #38bdf8, transparent);
+  top: -200px;
+  left: -200px;
+  filter: blur(120px);
+  opacity: 0.3;
+  animation: floatBg 12s infinite alternate;
 }
 
-.about-section p {
-    font-size: 18px;
-    line-height: 1.9;
-    margin-bottom: 20px;
-    opacity: 0.95;
+@keyframes floatBg {
+  from { transform: translate(0,0); }
+  to { transform: translate(120px, 120px); }
 }
 
-.about-hobbies {
-    margin: 25px 0 35px 20px;
+/* LAYOUT */
+.about-wrapper {
+  display: flex;
+  gap: 80px;
+  position: relative;
+  z-index: 2;
 }
 
-.about-hobbies li {
-    font-size: 18px;
-    margin-bottom: 10px;
-    transition: transform 0.3s ease;
+.about-left,
+.about-right {
+  flex: 1;
 }
 
-.about-hobbies li:hover {
-    transform: translateX(6px);
+/* LEFT */
+.about-left h1 {
+  font-size: 4rem;
+  font-weight: 900;
+
+  background: linear-gradient(270deg, #38bdf8, #6366f1, #a855f7);
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+
+  animation: gradientFlow 6s ease infinite;
 }
 
-.quote {
-    margin-top: 35px;
-    font-size: 22px;
-    font-style: italic;
-    color: #e5e7eb;
-    text-align: center;
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.signature {
-    margin-top: 10px;
-    text-align: center;
-    font-size: 22px;
-    opacity: 0.9;
+.line {
+  width: 80px;
+  height: 4px;
+  border-radius: 10px;
+  margin: 20px 0;
+  background: linear-gradient(90deg, #38bdf8, #a855f7);
 }
 
-.section-title {
-    margin-top: 70px;
-    margin-bottom: 25px;
-    font-size: 34px;
-    color: #f8fafc;
-    text-align: center;
+.about-left p {
+  line-height: 1.8;
+  color: #cbd5f5;
 }
 
-.skills-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    justify-content: center;
+/* RIGHT CARD */
+.about-right {
+  position: relative;
+  padding: 2rem;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
-.skills-grid span {
-    padding: 10px 18px;
-    border-radius: 25px;
-    font-size: 15px;
-    background: rgba(56, 189, 248, 0.12);
-    color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.4);
-    cursor: default;
-    transition: all 0.3s ease;
+.about-right::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  z-index: -1;
+
+  background: linear-gradient(270deg, #38bdf8, #a855f7, #6366f1);
+  background-size: 400% 400%;
+  animation: borderFlow 8s linear infinite;
+  opacity: 0.3;
 }
 
-.skills-grid span:hover {
-    background: #38bdf8;
-    color: #020617;
-    transform: translateY(-4px);
+@keyframes borderFlow {
+  0% { background-position: 0%; }
+  100% { background-position: 300%; }
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(25px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* SKILLS */
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 2rem;
 }
+
+.skills span {
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: all 0.3s ease;
+}
+
+.skills span:hover {
+  transform: translateY(-6px) scale(1.05);
+  background: rgba(56,189,248,0.15);
+
+  box-shadow:
+    0 0 15px rgba(56,189,248,0.5),
+    0 0 30px rgba(168,85,247,0.4);
+}
+
+/* TIMELINE */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  width: 3px;
+  height: 100%;
+  background: rgba(255,255,255,0.1);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  padding: 20px;
+  border-radius: 16px;
+
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: all 0.4s ease;
+}
+
+.timeline-item:hover {
+  transform: translateX(10px) scale(1.03);
+  background: rgba(56,189,248,0.08);
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -36px;
+  top: 22px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+
+  background: radial-gradient(circle, #38bdf8, #6366f1);
+}
+
+.timeline-item span {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #38bdf8;
+}
+
+.timeline-item p {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  color: #cbd5f5;
+}
+
 
 @media (max-width: 768px) {
-    .about-title {
-        font-size: 40px;
-    }
+  .about {
+    padding: 80px 6%;
+  }
 
-    .section-title {
-        font-size: 26px;
-    }
+  .about-wrapper {
+    flex-direction: column;
+    gap: 40px;
+  }
 
-    .about-section p,
-    .about-hobbies li {
-        font-size: 16px;
-    }
+  .about-left h1 {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  .line {
+    margin: 15px auto;
+  }
+
+  .about-left p {
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .about-right {
+    padding: 1.5rem;
+  }
 }
 
-.about-section::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(2, 6, 23, 0.75); 
-    z-index: 0;
-}
-.about-section > * {
-    position: relative;
-    z-index: 1;
+@media (max-width: 480px) {
+  .about-left h1 {
+    font-size: 2rem;
+  }
+
+  .skills span {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
 }
