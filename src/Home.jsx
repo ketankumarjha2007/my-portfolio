@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Typewriter } from "react-simple-typewriter";
 import "./Home.css";
 import profile from "./assets/profile.jpg";
-
+import { Link } from "react-router-dom";
 function Home() {
   const [showResume, setShowResume] = useState(false);
 
