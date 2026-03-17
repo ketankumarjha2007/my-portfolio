@@ -76,7 +76,7 @@ function Home() {
 
             {/* BUTTONS */}
             <div className="buttons">
-              <a href="/project" className="btn primary">Projects</a>
+              <Link to="/project" className="btn primary">Projects</Link>
               <button
                 className="btn ghost"
                 onClick={() => setShowResume(true)}
