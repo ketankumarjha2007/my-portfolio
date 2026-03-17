@@ -64,18 +64,9 @@ function About() {
         <section className="about">
             <div className="cursor-glow"></div>
 
-<<<<<<< HEAD
-            <p>
-                Hi everyone! I’m <strong>Ketan Kumar Jha</strong>, currently pursuing my
-                undergraduate studies at <strong>BMS Institute of Technology & Management,
-                Bengaluru</strong>. I’m in my <strong>2nd semester</strong> and passionate
-                about learning and building with technology.
-            </p>
-=======
             <div className="about-wrapper">
                 <div className="about-left fade">
                     <h1>About</h1>
->>>>>>> d1abeca (added many features and improve UI)
 
                     <p className="tagline">
                         Building systems that scale. Designing experiences that last.
