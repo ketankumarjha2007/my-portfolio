@@ -108,6 +108,7 @@ function About() {
                         <span className="magnetic text-chip">MongoDB</span>
                         <span className="magnetic text-chip">MySQL</span>
                         <span className="magnetic"><FaGitAlt /> Git</span>
+                        <span className="magnetic text-chip"><FaCode /> Express.js</span>
 
                     </div>
 
