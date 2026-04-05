@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import "./Home.css";
 import profile from "./assets/profile.jpg";
-
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 function Home() {
+  const navigate = useNavigate();
   const glowRef = useRef(null);
   const cardRef = useRef(null);
   const inputRef = useRef(null);
@@ -59,7 +61,7 @@ function Home() {
 
       case "projects":
         output = ["Accessing project directory..."];
-        setTimeout(() => (window.location.href = "/project"), 1000);
+        setTimeout(() => navigate("/project"), 1000);
         break;
 
       case "contact":
@@ -245,7 +247,7 @@ function Home() {
             </div>
           </div>
           <div className="buttons">
-            <a href="/project" className="btn primary">Projects</a>
+            <Link to="/project" className="btn primary">Projects</Link>
             <a href="/resume.pdf" download="KETAN_RESUME.pdf">
               <button className="btn primary">
                 ⬇ Download Resume
