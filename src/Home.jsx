@@ -31,7 +31,7 @@ function Home() {
     }, 18);
   };
 
-  /* ================= AI OS COMMAND SYSTEM ================= */
+  /* ================= COMMAND SYSTEM ================= */
   const runCommand = (cmd) => {
     let output = [];
 
@@ -81,8 +81,8 @@ function Home() {
         output = [
           "Bypassing firewall...",
           "Injecting payload...",
-          "Access Denied ",
-          "Nice try "
+          "Access Denied",
+          "Nice try"
         ];
         break;
 
@@ -102,6 +102,7 @@ function Home() {
       }, i * 350);
     });
   };
+
   const handleKey = (e) => {
     if (e.key === "Enter") {
       const cmd = e.target.value.trim().toLowerCase();
@@ -114,7 +115,6 @@ function Home() {
       e.target.value = "";
     }
 
-    /* HISTORY NAV */
     if (e.key === "ArrowUp") {
       if (history.length === 0) return;
       const newIndex = index < history.length - 1 ? index + 1 : index;
@@ -134,6 +134,7 @@ function Home() {
     }
   };
 
+  /* AUTO SCROLL */
   useEffect(() => {
     if (terminalBodyRef.current) {
       terminalBodyRef.current.scrollTop =
@@ -141,6 +142,7 @@ function Home() {
     }
   }, [lines, current]);
 
+  /* BOOT SEQUENCE */
   useEffect(() => {
     const boot = [
       "Booting KETAN OS...",
@@ -163,6 +165,7 @@ function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  /* CLICK TO FOCUS */
   useEffect(() => {
     const handleClick = () => {
       inputRef.current?.focus();
@@ -172,6 +175,7 @@ function Home() {
     return () => window.removeEventListener("click", handleClick);
   }, []);
 
+  /* CURSOR + CARD EFFECT */
   useEffect(() => {
     const move = (e) => {
       glowRef.current.style.left = e.clientX + "px";
@@ -209,7 +213,14 @@ function Home() {
       {/* HERO */}
       <section className="hero">
 
-        {/* LEFT */}
+        {/* IMAGE FIRST */}
+        <div className="right">
+          <div ref={cardRef} className="profile-card">
+            <img src={profile} alt="profile" />
+          </div>
+        </div>
+
+        {/* CONTENT */}
         <div className="left">
 
           <h1 className="title">
@@ -218,20 +229,8 @@ function Home() {
 
           <p className="subtitle">Full Stack Developer</p>
 
-          <p className="desc">
-            Secure systems. Scalable architecture. Clean execution.
-          </p>
-
           {/* TERMINAL */}
           <div className="terminal">
-
-            <div className="terminal-header">
-              <span className="dot red"></span>
-              <span className="dot yellow"></span>
-              <span className="dot green"></span>
-              <p>KETAN SYSTEM</p>
-            </div>
-
             <div className="terminal-body" ref={terminalBodyRef}>
               {lines.map((line, i) => (
                 <p key={i}>{line}</p>
@@ -244,22 +243,18 @@ function Home() {
               <input ref={inputRef} onKeyDown={handleKey} autoFocus />
               <span className="cursor-blink">|</span>
             </div>
-
           </div>
 
           {/* BUTTONS */}
           <div className="buttons">
-            <a href="/project" className="btn primary">View Work</a>
-            <a href="/resume.pdf" className="btn ghost">Resume</a>
+            <a href="/project" className="btn primary">Projects</a>
+            <a href="/resume.pdf" download="KETAN_RESUME.pdf">
+              <button className="btn primary">
+                ⬇ Download Resume
+              </button>
+            </a>
           </div>
 
-        </div>
-
-        {/* RIGHT */}
-        <div className="right">
-          <div ref={cardRef} className="profile-card">
-            <img src={profile} alt="profile" />
-          </div>
         </div>
 
       </section>
