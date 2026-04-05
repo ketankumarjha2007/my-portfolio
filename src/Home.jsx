@@ -244,8 +244,6 @@ function Home() {
               <span className="cursor-blink">|</span>
             </div>
           </div>
-
-          {/* BUTTONS */}
           <div className="buttons">
             <a href="/project" className="btn primary">Projects</a>
             <a href="/resume.pdf" download="KETAN_RESUME.pdf">
