@@ -1,21 +1,46 @@
 import { Link } from "react-router-dom";
-import logo from "./assets/logo.png";
+import { useState } from "react";
 import "./Navbar.css";
 
 function Navbar() {
+
+    const [menuOpen, setMenuOpen] = useState(false);
+
     return (
         <nav className="navbar">
-            <div className="nav-container">
-                <Link to="/" className="logo-wrapper">
-                    <img src={logo} alt="Ketan Logo" className="logo" />
-                </Link>
 
-                <ul className="nav-links">
-                    <li><Link to="/">Home</Link></li>
-                    <li><Link to="/about">About</Link></li>
-                    <li><Link to="/project">Projects</Link></li>
+            <div className="nav-container">
+
+                {/* DESKTOP LINKS */}
+                <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
+
+                    <li>
+                        <Link to="/" onClick={() => setMenuOpen(false)}>
+                            Home
+                        </Link>
+                    </li>
+
+                    <li>
+                        <Link to="/about" onClick={() => setMenuOpen(false)}>
+                            About
+                        </Link>
+                    </li>
+
+                    <li>
+                        <Link to="/project" onClick={() => setMenuOpen(false)}>
+                            Projects
+                        </Link>
+                    </li>
+
+                    <li>
+                        <Link to="/contact" onClick={() => setMenuOpen(false)}>
+                            Contact
+                        </Link>
+                    </li>
+
                 </ul>
             </div>
+
         </nav>
     );
 }

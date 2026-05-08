@@ -1,173 +1,639 @@
-.projects {
-    padding: 100px 8%;
-    background: #020617;
+/* ================= GOOGLE FONT ================= */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+/* ================= ROOT ================= */
+:root {
+
+    --bg: #030712;
+
+    --text: #ffffff;
+
+    --muted: #cbd5e1;
+
+    --blue: #3b82f6;
+
+    --purple: #8b5cf6;
+
+    --pink: #ec4899;
+}
+
+/* ================= MAIN ================= */
+
+.projects-section {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    padding:
+        140px 8%
+        100px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at top left,
+            rgba(59,130,246,0.12),
+            transparent 30%),
+
+        radial-gradient(circle at bottom right,
+            rgba(139,92,246,0.12),
+            transparent 30%),
+
+        var(--bg);
+}
+
+/* ================= ANIMATED BACKGROUND ================= */
+
+.projects-bg {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(circle at center,
+            rgba(59,130,246,0.08),
+            transparent 40%);
+
+    filter: blur(80px);
+
+    animation: pulseGlow 8s ease infinite;
+
+    z-index: 0;
+}
+
+/* ================= NOISE OVERLAY ================= */
+
+.projects-section::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image:
+        radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+
+    background-size: 22px 22px;
+
+    opacity: 0.35;
+
+    pointer-events: none;
+}
+
+/* ================= HEADER ================= */
+
+.projects-header {
+
+    position: relative;
+
+    z-index: 5;
+
+    max-width: 900px;
+
+    margin:
+        0 auto
+        90px;
+
+    text-align: center;
+}
+
+/* ================= BADGE ================= */
+
+.projects-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        12px 22px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,0.05);
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(16px);
+
+    color: #60a5fa;
+
+    font-size: 0.9rem;
+
+    font-weight: 500;
+
+    margin-bottom: 30px;
+
+    box-shadow:
+        0 0 25px rgba(59,130,246,0.12);
+}
+
+/* ================= TITLE ================= */
+
+.projects-title {
+
+    font-size: clamp(3rem, 8vw, 6.5rem);
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: -3px;
+
+    margin-bottom: 25px;
+
     color: white;
 }
 
-/* Title */
-.projects-title {
-    text-align: center;
-    font-size: 3.8rem;
-    font-weight: 800;
-    letter-spacing: 1px;
+.projects-title span {
 
-    background: linear-gradient(
-        270deg,
-        #38bdf8,
-        #a855f7,
-        #6366f1,
-        #38bdf8
-    );
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--purple),
+            var(--pink)
+        );
+
     background-size: 300% 300%;
+
+    animation: gradientFlow 8s ease infinite;
+
     background-clip: text;
     -webkit-background-clip: text;
+
     color: transparent;
     -webkit-text-fill-color: transparent;
-
-    animation: gradientMove 6s ease infinite;
-
-    /* glow effect */
-    text-shadow: 
-        0 0 20px rgba(56,189,248,0.4),
-        0 0 40px rgba(168,85,247,0.3);
 }
 
-/* make sure this exists */
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+/* ================= SUBTITLE ================= */
 
-/* 🔥 gradient animation */
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Subtitle */
 .projects-subtitle {
-    text-align: center;
-    color: #94a3b8;
-    margin-bottom: 60px;
+
+    color: var(--muted);
+
+    font-size: clamp(0.95rem, 1.2vw, 1.12rem);
+
+    line-height: 2;
+
+    max-width: 700px;
+
+    margin: auto;
+
+    opacity: 0.9;
 }
 
-/* Grid */
+/* ================= GRID ================= */
+
 .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
-    perspective: 1000px;
-}
 
-/* Card */
-.project-card {
     position: relative;
-    padding: 30px;
-    border-radius: 22px;
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(25px);
-    border: 1px solid rgba(255,255,255,0.08);
-    transition: 0.4s ease;
-    transform-style: preserve-3d;
-    overflow: hidden;
+
+    z-index: 5;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(320px,1fr));
+
+    gap: 35px;
 }
 
-/* ✨ Moving Light Effect */
+/* ================= CARD ================= */
+
+.project-card {
+
+    position: relative;
+
+    padding: 38px;
+
+    border-radius: 34px;
+
+    overflow: hidden;
+
+    background:
+        rgba(255,255,255,0.05);
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(20px);
+
+    transform-style: preserve-3d;
+
+    transition:
+        transform 0.3s ease,
+        border 0.3s ease,
+        box-shadow 0.3s ease;
+
+    isolation: isolate;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,0.35);
+}
+
+/* ================= GLOW BORDER ================= */
+
 .project-card::before {
+
     content: "";
+
     position: absolute;
-    top: var(--y);
-    left: var(--x);
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(56,189,248,0.25), transparent);
-    transform: translate(-50%, -50%);
+
+    inset: -2px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(59,130,246,0.6),
+            rgba(139,92,246,0.4),
+            rgba(236,72,153,0.4),
+            rgba(59,130,246,0.6)
+        );
+
+    background-size: 300% 300%;
+
+    animation: borderFlow 8s linear infinite;
+
+    z-index: -2;
+
     opacity: 0;
-    transition: opacity 0.3s;
+
+    transition: 0.4s ease;
 }
 
 .project-card:hover::before {
     opacity: 1;
 }
 
-/* Shine sweep */
-.shine {
+/* ================= GLASS OVERLAY ================= */
+
+.project-card::after {
+
+    content: "";
+
     position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        120deg,
-        transparent 30%,
-        rgba(255,255,255,0.2),
-        transparent 70%
-    );
-    transform: translateX(-100%);
-    transition: 0.6s;
+
+    inset: 1px;
+
+    border-radius: inherit;
+
+    background:
+        rgba(3,7,18,0.88);
+
+    z-index: -1;
+}
+
+/* ================= SHINE ================= */
+
+.shine {
+
+    position: absolute;
+
+    top: 0;
+    left: -120%;
+
+    width: 60%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,0.14),
+            transparent
+        );
+
+    transform: skewX(-25deg);
+
+    transition: 1s ease;
 }
 
 .project-card:hover .shine {
-    transform: translateX(100%);
+    left: 140%;
 }
 
-/* Hover */
+/* ================= HOVER ================= */
+
 .project-card:hover {
-    transform: scale(1.04);
-    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+
+    transform:
+        perspective(1200px)
+        translateY(-12px)
+        scale(1.02);
+
+    border:
+        1px solid rgba(59,130,246,0.25);
+
+    box-shadow:
+        0 30px 70px rgba(59,130,246,0.16),
+        0 0 45px rgba(139,92,246,0.08);
 }
 
-/* Text */
-.project-card h3 {
-    font-size: 1.5rem;
-}
+/* ================= NUMBER ================= */
 
-.project-card p {
-    color: #cbd5f5;
-    margin: 12px 0;
-}
+.project-number {
 
-/* Link */
-.project-card a {
-    color: #38bdf8;
-    text-decoration: none;
-    font-weight: 600;
-    position: relative;
-}
-
-/* Elegant underline */
-.project-card a::after {
-    content: "";
     position: absolute;
-    width: 0%;
-    height: 2px;
-    background: #38bdf8;
-    left: 0;
-    bottom: -4px;
-    transition: 0.3s;
+
+    top: 24px;
+    right: 28px;
+
+    font-size: 4.5rem;
+
+    font-weight: 800;
+
+    color:
+        rgba(255,255,255,0.04);
+
+    user-select: none;
 }
 
-.project-card a:hover::after {
-    width: 100%;
+/* ================= CONTENT ================= */
+
+.project-content {
+
+    position: relative;
+
+    z-index: 5;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .projects-title {
-        font-size: 2.4rem;
+.project-content h3 {
+
+    font-size: 1.8rem;
+
+    margin-bottom: 18px;
+
+    color: white;
+}
+
+.project-content p {
+
+    color: var(--muted);
+
+    line-height: 1.9;
+
+    font-size: 0.98rem;
+
+    margin-bottom: 28px;
+
+    text-wrap: balance;
+}
+
+/* ================= TECH STACK ================= */
+
+.project-tech {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding:
+        10px 18px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(59,130,246,0.1);
+
+    border:
+        1px solid rgba(59,130,246,0.2);
+
+    color: #60a5fa;
+
+    font-size: 0.82rem;
+
+    font-weight: 500;
+}
+
+/* ================= FOOTER ================= */
+
+.project-footer {
+
+    margin-top: 35px;
+
+    position: relative;
+
+    z-index: 5;
+}
+
+/* ================= BUTTON ================= */
+
+.project-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        15px 24px;
+
+    border-radius: 16px;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #7c3aed,
+            #ec4899
+        );
+
+    background-size: 250% 250%;
+
+    animation: gradientFlow 8s ease infinite;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+
+    box-shadow:
+        0 12px 30px rgba(59,130,246,0.25);
+}
+
+.project-btn:hover {
+
+    transform:
+        translateY(-4px)
+        scale(1.02);
+
+    box-shadow:
+        0 20px 45px rgba(59,130,246,0.35);
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes gradientFlow {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
     }
 }
 
-.projects-title {
-    animation: gradientMove 6s ease infinite, fadeIn 1s ease;
+@keyframes borderFlow {
+
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
+@keyframes pulseGlow {
+
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
     }
-    to {
+
+    50% {
+        transform: scale(1.1);
         opacity: 1;
-        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+/* ================= LAPTOP ================= */
+
+@media (max-width: 1200px) {
+
+    .projects-grid {
+        gap: 28px;
+    }
+
+    .project-card {
+        padding: 32px;
+    }
+}
+
+/* ================= TABLET ================= */
+
+@media (max-width: 992px) {
+
+    .projects-section {
+
+        padding:
+            120px 6%
+            80px;
+    }
+
+    .projects-header {
+
+        margin-bottom: 70px;
+    }
+
+    .projects-grid {
+
+        grid-template-columns:
+            repeat(auto-fit, minmax(280px,1fr));
+    }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+
+    .projects-section {
+
+        padding:
+            110px 5%
+            70px;
+    }
+
+    .projects-grid {
+
+        grid-template-columns: 1fr;
+
+        gap: 24px;
+    }
+
+    .project-card {
+
+        padding: 28px;
+
+        border-radius: 28px;
+    }
+
+    .project-content h3 {
+
+        font-size: 1.5rem;
+    }
+
+    .project-content p {
+
+        font-size: 0.94rem;
+    }
+
+    .project-number {
+
+        font-size: 3.2rem;
+    }
+
+    .project-btn {
+
+        width: 100%;
+
+        justify-content: center;
+    }
+}
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width: 480px) {
+
+    .projects-title {
+
+        line-height: 1.12;
+    }
+
+    .project-card {
+
+        padding: 24px;
+    }
+
+    .project-content h3 {
+
+        font-size: 1.3rem;
+    }
+
+    .project-tech {
+
+        font-size: 0.75rem;
     }
 }
