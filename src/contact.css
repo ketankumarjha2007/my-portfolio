@@ -142,7 +142,7 @@
 }
 
 /* ================= REVEAL ================= */
-[data-reveal] {
+.contact [data-reveal] {
     opacity: 0;
     transform: translateY(26px);
     filter: blur(6px);
@@ -152,7 +152,7 @@
         filter 0.9s var(--ease) var(--d, 0ms);
 }
 
-[data-reveal].is-in {
+.contact [data-reveal].is-in {
     opacity: 1;
     transform: none;
     filter: none;
@@ -412,7 +412,7 @@
         rgba(139, 92, 246, 0.25) 75%,
         rgba(59, 130, 246, 0.9)
     );
-    animation: spin 7s linear infinite;
+    animation: ct-spin 7s linear infinite;
     box-shadow:
         0 30px 80px rgba(0, 0, 0, 0.55),
         0 0 70px rgba(99, 102, 241, 0.18);
@@ -705,7 +705,7 @@
     }
 }
 
-@keyframes spin {
+@keyframes ct-spin {
     to {
         --angle: 360deg;
     }
@@ -882,7 +882,7 @@
         transition-duration: 0.01ms !important;
     }
 
-    [data-reveal] {
+    .contact [data-reveal] {
         opacity: 1;
         transform: none;
         filter: none;

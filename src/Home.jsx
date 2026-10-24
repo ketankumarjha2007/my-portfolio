@@ -1,69 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Home.css";
 import profile from "./assets/profile.jpg";
+import LiveStats from "./LiveStats";
+import { PROFILES, profileUrl } from "./profiles";
 
 const LINKS = {
-  leetcode: "https://leetcode.com/u/7o6vYciZSq/",
-  github: "https://github.com/ketankumarjha2007",
-  linkedin:
-    "https://www.linkedin.com/in/ketan-kumar-jha-499064305/",
+  leetcode: profileUrl.leetcode(PROFILES.leetcode.username),
+  github: profileUrl.github(PROFILES.github.username),
+  linkedin: PROFILES.linkedin,
 };
 
-const PROJECTS = [
-  {
-    number: "01",
-    name: "CampusSetu",
-    category: "CAMPUS MANAGEMENT · MOBILE APP",
-    mark: "CS",
-    theme: "campus",
-    description:
-      "A college complaint and campus-management platform that helps students raise complaints, track progress, and connect with the right campus officials. Includes role-based workflows for students, teachers, cluster heads, and principals.",
-    impact: "From complaint submission to resolution tracking.",
-    tech: [
-      "React Native",
-      "Expo",
-      "Node.js",
-      "Express.js",
-      "MongoDB",
-      "Firebase",
-    ],
-    live: "",
-    github: "",
-  },
-  {
-    number: "02",
-    name: "Vasudha",
-    category: "ENVIRONMENT · AI + IoT",
-    mark: "V.",
-    theme: "vasudha",
-    description:
-      "An environmental intelligence platform focused on sustainability. It brings together carbon-footprint awareness, air-quality insights, smart energy monitoring, and an environmental assistant, with scope for future AQI prediction.",
-    impact: "Understand your footprint. Make greener choices.",
-    tech: [
-      "React",
-      "Node.js",
-      "MongoDB",
-      "Firebase",
-      "IoT",
-      "Data Visualization",
-    ],
-    live: "",
-    github: "",
-  },
-  {
-    number: "03",
-    name: "ReRoute",
-    category: "HACKATHON · ITINERARY OPTIMIZER",
-    mark: "R/",
-    theme: "reroute",
-    description:
-      "An itinerary optimization project developed for a hackathon. The goal is to help organize travel plans using destination data. My contribution focused on the frontend and working with a local SQLite dataset.",
-    impact: "Less planning friction. Better journeys.",
-    tech: ["React", "JavaScript", "SQLite", "Frontend"],
-    live: "",
-    github: "",
-  },
+const NAV = [
+  { id: "about", label: "About" },
+  { id: "coding", label: "Coding" },
+  { id: "skills", label: "Skills" },
+  { id: "connect", label: "Contact" },
 ];
+
+const STRIP = ["PRODUCT-MINDED", "FULL-STACK CURIOUS", "DETAIL-OBSESSED", "IMPACT-DRIVEN", "ALWAYS SHIPPING"];
 
 const SKILLS = [
   {
@@ -88,6 +42,23 @@ const SKILLS = [
   },
 ];
 
+/* contact rows: only platforms that have a username are listed */
+const SOCIALS = [
+  { key: "leetcode", symbol: "LC", name: "LeetCode", note: "Problem solving" },
+  { key: "github", symbol: "GH", name: "GitHub", note: "Code and projects" },
+]
+  .filter((s) => PROFILES[s.key]?.username)
+  .map((s) => ({ ...s, href: profileUrl[s.key](PROFILES[s.key].username) }))
+  .concat([
+    {
+      key: "linkedin",
+      symbol: "in",
+      name: "LinkedIn",
+      note: "Professional profile",
+      href: PROFILES.linkedin,
+    },
+  ]);
+
 function Arrow({ diagonal = false }) {
   return (
     <span className="arrow" aria-hidden="true">
@@ -98,8 +69,12 @@ function Arrow({ diagonal = false }) {
 
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [stuck, setStuck] = useState(false);
+  const [active, setActive] = useState("");
   const [year] = useState(() => new Date().getFullYear());
+  const rootRef = useRef(null);
 
+  /* ----- reveal on scroll ----- */
   useEffect(() => {
     const elements = document.querySelectorAll("[data-reveal]");
 
@@ -107,10 +82,8 @@ function Home() {
       !("IntersectionObserver" in window) ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
-      elements.forEach((element) =>
-        element.classList.add("is-visible")
-      );
-      return;
+      elements.forEach((el) => el.classList.add("is-visible"));
+      return undefined;
     }
 
     const observer = new IntersectionObserver(
@@ -122,81 +95,127 @@ function Home() {
           }
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.1, rootMargin: "0px 0px -30px 0px" }
     );
 
-    elements.forEach((element) => observer.observe(element));
-
+    elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
-  function closeMenu() {
-    setMenuOpen(false);
-  }
+  /* ----- scroll progress + sticky header ----- */
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? window.scrollY / max : 0;
+      rootRef.current?.style.setProperty("--p", String(Math.min(Math.max(p, 0), 1)));
+      setStuck(window.scrollY > 8);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  /* ----- scroll-spy for the nav ----- */
+  useEffect(() => {
+    if (!("IntersectionObserver" in window)) return undefined;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px" }
+    );
+    NAV.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  /* ----- mobile menu: Esc closes, body scroll lock ----- */
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <main className="portfolio" id="top">
+    <main className="portfolio" id="top" ref={rootRef}>
+      <div className="scroll-progress" aria-hidden="true" />
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
       <div className="grain" aria-hidden="true" />
 
       {/* NAVBAR */}
-      <header className="site-header">
-        <a
-          className="wordmark"
-          href="#top"
-          onClick={closeMenu}
-          aria-label="Ketan Jha homepage"
-        >
-          <span className="wordmark-icon">
-            K<span>.</span>
-          </span>
+      <header className={`site-header ${stuck ? "is-stuck" : ""} ${menuOpen ? "menu-on" : ""}`}>
+        <div className="header-inner section-shell">
+          <a className="wordmark" href="#top" onClick={closeMenu} aria-label="Ketan Jha homepage">
+            <span className="wordmark-icon">
+              K<span>.</span>
+            </span>
+            <span className="wordmark-name">
+              KETAN JHA
+              <small>PORTFOLIO / {year}</small>
+            </span>
+          </a>
 
-          <span className="wordmark-name">
-            KETAN JHA
-            <small>PORTFOLIO / {year}</small>
-          </span>
-        </a>
-
-        <button
-          className={`menu-toggle ${menuOpen ? "active" : ""}`}
-          type="button"
-          aria-label={
-            menuOpen ? "Close navigation" : "Open navigation"
-          }
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span />
-          <span />
-        </button>
-
-        <nav
-          className={`main-nav ${menuOpen ? "nav-open" : ""}`}
-          aria-label="Main navigation"
-        >
-          <a href="#about" onClick={closeMenu}>
-            About
-          </a>
-          <a href="#work" onClick={closeMenu}>
-            Projects
-          </a>
-          <a href="#skills" onClick={closeMenu}>
-            Skills
-          </a>
-          <a href="#connect" onClick={closeMenu}>
-            Contact
-          </a>
-          <a
-            className="nav-cta"
-            href={LINKS.linkedin}
-            target="_blank"
-            rel="noreferrer"
-            onClick={closeMenu}
+          <button
+            className={`menu-toggle ${menuOpen ? "active" : ""}`}
+            type="button"
+            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={menuOpen}
+            aria-controls="main-nav"
+            onClick={() => setMenuOpen((o) => !o)}
           >
-            Let&apos;s connect <Arrow diagonal />
-          </a>
-        </nav>
+            <span />
+            <span />
+          </button>
+
+          <nav
+            id="main-nav"
+            className={`main-nav ${menuOpen ? "nav-open" : ""}`}
+            aria-label="Main navigation"
+          >
+            {NAV.map(({ id, label }) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                onClick={closeMenu}
+                aria-current={active === id ? "true" : undefined}
+              >
+                {label}
+              </a>
+            ))}
+            <a
+              className="nav-cta"
+              href={LINKS.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              onClick={closeMenu}
+            >
+              Let&apos;s connect <Arrow diagonal />
+            </a>
+          </nav>
+        </div>
       </header>
 
       {/* HERO */}
@@ -225,24 +244,17 @@ function Home() {
           </div>
 
           <p className="hero-description">
-            Second-year B.E. Computer Science student at{" "}
-            <strong>BMSIT&amp;M, Bengaluru</strong>, building
-            useful digital products at the intersection of
-            full-stack development, problem solving, and
-            real-world impact.
+            Second-year B.E. Computer Science student at <strong>BMSIT&amp;M, Bengaluru</strong>,
+            building useful digital products at the intersection of full-stack development, problem
+            solving, and real-world impact.
           </p>
 
           <div className="hero-actions">
-            <a className="button button-primary" href="#work">
-              Explore my work <Arrow diagonal />
+            <a className="button button-primary" href="#coding">
+              See my live stats <Arrow diagonal />
             </a>
 
-            <a
-              className="button button-quiet"
-              href={LINKS.github}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a className="button button-quiet" href={LINKS.github} target="_blank" rel="noreferrer">
               GitHub profile <Arrow diagonal />
             </a>
           </div>
@@ -266,18 +278,10 @@ function Home() {
 
           <div className="profile-frame">
             <div className="profile-image-wrap">
-              <img
-                src={profile}
-                alt="Ketan Kumar Jha"
-                className="profile-image"
-              />
-
+              <img src={profile} alt="Ketan Kumar Jha" className="profile-image" />
               <div className="image-overlay" />
-
               <div className="profile-caption">
-                <span className="caption-index">
-                  01 / THE BUILDER
-                </span>
+                <span className="caption-index">01 / THE BUILDER</span>
                 <strong>
                   Curiosity into
                   <br />
@@ -303,9 +307,7 @@ function Home() {
             </span>
           </div>
 
-          <span className="visual-coordinate">
-            BENGALURU · INDIA
-          </span>
+          <span className="visual-coordinate">BENGALURU · INDIA</span>
         </div>
 
         <a className="scroll-cue" href="#about">
@@ -314,24 +316,24 @@ function Home() {
         </a>
       </section>
 
-      {/* INTRO STRIP */}
-      <section className="intro-strip">
-        <div className="strip-inner">
-          <span>PRODUCT-MINDED</span>
-          <i>✳</i>
-          <span>FULL-STACK CURIOUS</span>
-          <i>✳</i>
-          <span>DETAIL-OBSESSED</span>
-          <i>✳</i>
-          <span>IMPACT-DRIVEN</span>
+      {/* MARQUEE STRIP */}
+      <section className="intro-strip" aria-label="Highlights">
+        <div className="strip-track">
+          {[0, 1].map((copy) => (
+            <div className="strip-group" key={copy} aria-hidden={copy === 1}>
+              {STRIP.map((t) => (
+                <span className="strip-item" key={t}>
+                  {t}
+                  <i>✳</i>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ABOUT */}
-      <section
-        className="section-shell section-block"
-        id="about"
-      >
+      <section className="section-shell section-block" id="about">
         <div className="section-label" data-reveal>
           <span>01</span> / A LITTLE ABOUT ME
         </div>
@@ -345,27 +347,19 @@ function Home() {
 
           <div className="about-copy" data-reveal>
             <p>
-              I&apos;m a second-year Computer Science and
-              Engineering student at BMS Institute of Technology
-              &amp; Management, Bengaluru. I enjoy taking an idea
-              from a rough sketch to a working product—thinking
-              through the interface, backend, and the experience
-              in between.
+              I&apos;m a second-year Computer Science and Engineering student at BMS Institute of
+              Technology &amp; Management, Bengaluru. I enjoy taking an idea from a rough sketch to
+              a working product—thinking through the interface, backend, and the experience in
+              between.
             </p>
 
             <p>
-              My current focus is full-stack development, data
-              structures and algorithms, and projects that solve
-              practical problems—from campus issue reporting to
-              environmental awareness and smarter trip planning.
+              My current focus is full-stack development, data structures and algorithms, and
+              products that solve practical problems—from campus issue reporting to environmental
+              awareness and smarter trip planning.
             </p>
 
-            <a
-              className="text-link"
-              href={LINKS.linkedin}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a className="text-link" href={LINKS.linkedin} target="_blank" rel="noreferrer">
               More about me on LinkedIn <Arrow diagonal />
             </a>
           </div>
@@ -376,141 +370,36 @@ function Home() {
             <span className="principle-number">01</span>
             <span className="principle-symbol">⌘</span>
             <h3>Build end to end</h3>
-            <p>
-              From responsive interfaces to APIs, data models,
-              and deployment.
-            </p>
+            <p>From responsive interfaces to APIs, data models, and deployment.</p>
           </article>
 
           <article className="principle-card" data-reveal>
             <span className="principle-number">02</span>
             <span className="principle-symbol">↗</span>
             <h3>Keep getting better</h3>
-            <p>
-              Strengthening fundamentals through consistent
-              problem solving.
-            </p>
+            <p>Strengthening fundamentals through consistent problem solving.</p>
           </article>
 
           <article className="principle-card" data-reveal>
             <span className="principle-number">03</span>
             <span className="principle-symbol">✳</span>
             <h3>Make it meaningful</h3>
-            <p>
-              Exploring technology that can make everyday
-              systems work better.
-            </p>
+            <p>Exploring technology that can make everyday systems work better.</p>
           </article>
         </div>
       </section>
 
-      {/* PROJECTS */}
-      <section
-        className="section-shell section-block work-section"
-        id="work"
-      >
+      {/* LIVE CODING STATS (replaces Projects) */}
+      <section className="section-shell section-block coding-section" id="coding">
         <div className="section-label" data-reveal>
-          <span>02</span> / SELECTED WORK
+          <span>02</span> / LIVE CODING STATS
         </div>
 
-        <div className="work-heading" data-reveal>
-          <h2 className="section-title">
-            Ideas, meet <span>execution.</span>
-          </h2>
-          <p>
-            Three projects. Three different problems. One goal:
-            make technology useful.
-          </p>
-        </div>
-
-        <div className="projects-list">
-          {PROJECTS.map((project) => (
-            <article
-              className={`project-card project-${project.theme}`}
-              key={project.name}
-              data-reveal
-            >
-              <div className="project-art">
-                <div className="art-grid" />
-                <span className="project-mark">
-                  {project.mark}
-                </span>
-                <span className="project-art-index">
-                  PROJECT / {project.number}
-                </span>
-                <span className="art-orbit" />
-              </div>
-
-              <div className="project-content">
-                <div className="project-eyebrow">
-                  <span>{project.category}</span>
-                  <span>{project.number} — 03</span>
-                </div>
-
-                <h3>
-                  {project.name}
-                  <span className="period">.</span>
-                </h3>
-
-                <p className="project-description">
-                  {project.description}
-                </p>
-
-                <p className="project-impact">
-                  <span>↳</span> {project.impact}
-                </p>
-
-                <ul className="tech-list">
-                  {project.tech.map((tech) => (
-                    <li key={tech}>{tech}</li>
-                  ))}
-                </ul>
-
-                <div className="project-links">
-                  {project.live ? (
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Live preview <Arrow diagonal />
-                    </a>
-                  ) : (
-                    <span className="link-placeholder">
-                      Live link to be added
-                    </span>
-                  )}
-
-                  {project.github ? (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Source code <Arrow diagonal />
-                    </a>
-                  ) : (
-                    <span className="link-placeholder">
-                      Repository to be added
-                    </span>
-                  )}
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <p className="links-note">
-          Project demos and repositories will be linked here
-          as they are published.
-        </p>
+        <LiveStats />
       </section>
 
       {/* SKILLS */}
-      <section
-        className="section-shell section-block skills-section"
-        id="skills"
-      >
+      <section className="section-shell section-block skills-section" id="skills">
         <div className="section-label" data-reveal>
           <span>03</span> / THE TOOLKIT
         </div>
@@ -523,18 +412,14 @@ function Home() {
           </h2>
 
           <p>
-            My toolkit keeps evolving. These are the technologies
-            I&apos;ve been learning and using across projects.
+            My toolkit keeps evolving. These are the technologies I&apos;ve been learning and using
+            across projects.
           </p>
         </div>
 
         <div className="skills-grid">
           {SKILLS.map((group, index) => (
-            <article
-              className="skill-group"
-              key={group.title}
-              data-reveal
-            >
+            <article className="skill-group" key={group.title} data-reveal>
               <div className="skill-group-top">
                 <span>0{index + 1}</span>
                 <span className="skill-arrow">↗</span>
@@ -553,10 +438,7 @@ function Home() {
       </section>
 
       {/* CONTACT */}
-      <section
-        className="section-shell section-block connect-section"
-        id="connect"
-      >
+      <section className="section-shell section-block connect-section" id="connect">
         <div className="connect-panel" data-reveal>
           <div className="section-label">
             <span>04</span> / FIND ME ONLINE
@@ -573,63 +455,26 @@ function Home() {
               </h2>
 
               <p className="connect-description">
-                Open to learning opportunities, internships,
-                collaborations, and conversations with people
-                who love building things.
+                Open to learning opportunities, internships, collaborations, and conversations with
+                people who love building things.
               </p>
 
-              <a
-                className="button button-primary"
-                href={LINKS.linkedin}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a className="button button-primary" href={LINKS.linkedin} target="_blank" rel="noreferrer">
                 Connect on LinkedIn <Arrow diagonal />
               </a>
             </div>
 
             <div className="social-list">
-              <a
-                className="social-row"
-                href={LINKS.leetcode}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="social-symbol">LC</span>
-                <span className="social-copy">
-                  <strong>LeetCode</strong>
-                  <small>Problem solving</small>
-                </span>
-                <Arrow diagonal />
-              </a>
-
-              <a
-                className="social-row"
-                href={LINKS.github}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="social-symbol">GH</span>
-                <span className="social-copy">
-                  <strong>GitHub</strong>
-                  <small>Code and projects</small>
-                </span>
-                <Arrow diagonal />
-              </a>
-
-              <a
-                className="social-row"
-                href={LINKS.linkedin}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="social-symbol">in</span>
-                <span className="social-copy">
-                  <strong>LinkedIn</strong>
-                  <small>Professional profile</small>
-                </span>
-                <Arrow diagonal />
-              </a>
+              {SOCIALS.map((s) => (
+                <a key={s.key} className="social-row" href={s.href} target="_blank" rel="noreferrer">
+                  <span className="social-symbol">{s.symbol}</span>
+                  <span className="social-copy">
+                    <strong>{s.name}</strong>
+                    <small>{s.note}</small>
+                  </span>
+                  <Arrow diagonal />
+                </a>
+              ))}
             </div>
           </div>
         </div>
@@ -647,9 +492,7 @@ function Home() {
           BACK TO TOP ↑
         </a>
 
-        <span className="copyright">
-          © {year} Ketan Kumar Jha
-        </span>
+        <span className="copyright">© {year} Ketan Kumar Jha</span>
       </footer>
     </main>
   );
