@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import "./LiveStats.css";
-import { PROFILES, profileUrl } from "./profiles";
+import "./Livestats.css";
+import { PROFILES, profileUrl } from "./Profiles";
 
 /* ------------------------------------------------------------------ */
 /*  CONFIG                                                             */

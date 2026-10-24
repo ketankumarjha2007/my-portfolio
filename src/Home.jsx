@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "./Home.css";
 import profile from "./assets/profile.jpg";
-import LiveStats from "./LiveStats";
-import { PROFILES, profileUrl } from "./profiles";
+import LiveStats from "./Livestats";
+import { PROFILES, profileUrl } from "./Profiles";
 
 const LINKS = {
   leetcode: profileUrl.leetcode(PROFILES.leetcode.username),

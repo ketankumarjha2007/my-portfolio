@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpRight, Code2, ExternalLink } from "lucide-react";
 import "./Project.css";
 
@@ -77,6 +77,9 @@ const ACCENTS = {
 
 const filters = ["All Projects", "Full Stack", "Mobile", "Frontend"];
 
+const ALL_TECH = [...new Set(projects.flatMap((p) => p.tech))];
+const LIVE_COUNT = projects.filter((p) => p.live).length;
+
 const countFor = (filter) =>
   filter === "All Projects"
     ? projects.length
@@ -92,6 +95,53 @@ const accentStyle = (accent) => ({
   "--accent": ACCENTS[accent].hex,
   "--accent-rgb": ACCENTS[accent].rgb,
 });
+
+const pad = (n) => String(n).padStart(2, "0");
+
+/* ---------------------------------------------------------
+   Small pieces
+   --------------------------------------------------------- */
+
+function Count({ to, duration = 1300 }) {
+  const ref = useRef(null);
+  const [v, setV] = useState(0);
+  const [go, setGo] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    if (reducedMotion() || !("IntersectionObserver" in window)) {
+      setV(to);
+      return undefined;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setGo(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [to]);
+
+  useEffect(() => {
+    if (!go) return undefined;
+    let raf;
+    const t0 = performance.now();
+    const tick = (t) => {
+      const p = Math.min((t - t0) / duration, 1);
+      setV(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [go, to, duration]);
+
+  return <span ref={ref}>{v}</span>;
+}
 
 /* ---------------------------------------------------------
    Drawn product previews (used until a screenshot is added)
@@ -338,29 +388,29 @@ function Preview({ project }) {
   );
 
   if (project.preview === "phone") {
-    return <div className="bare">{body}</div>;
+    return <div className="pj-bare">{body}</div>;
   }
 
   return (
-    <div className="frame">
-      <div className="frame-bar" aria-hidden="true">
+    <div className="pj-frame">
+      <div className="pj-frame-bar" aria-hidden="true">
         <i />
         <i />
         <i />
-        <span className="frame-url">
-          {project.live ? host(project.live) : `github.com/ketankumarjha2007`}
+        <span className="pj-frame-url">
+          {project.live ? host(project.live) : "github.com/ketankumarjha2007"}
         </span>
       </div>
-      <div className="frame-body">{body}</div>
+      <div className="pj-frame-body">{body}</div>
     </div>
   );
 }
 
 /* ---------------------------------------------------------
-   Case study row
+   Case study card
    --------------------------------------------------------- */
 
-function Case({ project, flip }) {
+function Case({ project, index, total, flip }) {
   const Media = project.live ? "a" : "div";
   const mediaProps = project.live
     ? {
@@ -373,47 +423,48 @@ function Case({ project, flip }) {
 
   return (
     <article
-      className={`case ${flip ? "is-flip" : ""}`}
+      className={`pj-card pj-case ${flip ? "is-flip" : ""}`}
       id={project.id}
+      data-pj
       style={accentStyle(project.accent)}
     >
-      <div className="case-info">
-        <p className="case-type">
-          <i className="swatch" aria-hidden="true" />
+      <div className="pj-case-info">
+        <div className="pj-case-top">
+          <span className="pj-case-n">
+            {pad(index + 1)} <em>/ {pad(total)}</em>
+          </span>
+          <span className="pj-cat">{project.category}</span>
+        </div>
+
+        <p className="pj-case-type">
+          <i className="pj-swatch" aria-hidden="true" />
           {project.type}
         </p>
 
         <h3>{project.title}</h3>
-        <p className="case-desc">{project.description}</p>
+        <p className="pj-case-desc">{project.description}</p>
 
-        <dl className="case-specs">
-          <div>
-            <dt>Category</dt>
-            <dd>{project.category}</dd>
-          </div>
-          <div>
-            <dt>Stack</dt>
-            <dd>{project.tech.join(", ")}</dd>
-          </div>
-          <div>
-            <dt>Status</dt>
-            <dd>
-              <i className={`dot ${project.live ? "is-live" : ""}`} aria-hidden="true" />
-              {project.status}
-            </dd>
-          </div>
-        </dl>
+        <ul className="pj-tech" aria-label="Tech stack">
+          {project.tech.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
 
-        <div className="case-actions">
+        <p className="pj-status">
+          <i className={`pj-dot ${project.live ? "is-live" : ""}`} aria-hidden="true" />
+          {project.status}
+        </p>
+
+        <div className="pj-case-actions">
           {project.live ? (
-            <a className="btn" href={project.live} target="_blank" rel="noreferrer">
+            <a className="pj-btn primary" href={project.live} target="_blank" rel="noreferrer">
               Visit live site
               <ExternalLink size={16} />
             </a>
           ) : null}
 
           <a
-            className={project.live ? "text-link" : "btn"}
+            className={`pj-btn ${project.live ? "quiet" : "primary"}`}
             href={project.repo}
             target="_blank"
             rel="noreferrer"
@@ -423,15 +474,14 @@ function Case({ project, flip }) {
             View source
             <ArrowUpRight size={15} />
           </a>
-
-          {!project.live ? <span className="muted-note">Live demo not listed</span> : null}
         </div>
+        {!project.live ? <p className="pj-note">Live demo not listed</p> : null}
       </div>
 
-      <Media className="case-media" {...mediaProps}>
+      <Media className="pj-case-media" {...mediaProps}>
         <Preview project={project} />
         {project.live ? (
-          <span className="media-hint" aria-hidden="true">
+          <span className="pj-hint" aria-hidden="true">
             Open live site <ArrowUpRight size={14} />
           </span>
         ) : null}
@@ -445,6 +495,7 @@ function Case({ project, flip }) {
    --------------------------------------------------------- */
 
 function Project() {
+  const rootRef = useRef(null);
   const [activeFilter, setActiveFilter] = useState("All Projects");
 
   const visible = useMemo(
@@ -454,6 +505,74 @@ function Project() {
       ),
     [activeFilter]
   );
+
+  /* ----- reveal on scroll (content stays visible without JS / IO) ----- */
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+    const els = root.querySelectorAll("[data-pj]:not(.in)");
+    if (!("IntersectionObserver" in window) || reducedMotion()) {
+      els.forEach((el) => el.classList.add("in"));
+      return undefined;
+    }
+    root.classList.add("pj-js");
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            en.target.classList.add("in");
+            io.unobserve(en.target);
+          }
+        }),
+      { threshold: 0, rootMargin: "0px 0px -8% 0px" }
+    );
+    els.forEach((el) => io.observe(el));
+    const t = setTimeout(() => els.forEach((el) => el.classList.add("in")), 4500);
+    return () => {
+      clearTimeout(t);
+      io.disconnect();
+    };
+  }, [activeFilter]);
+
+  /* ----- scroll progress ----- */
+  useEffect(() => {
+    const root = rootRef.current;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      if (!root) return;
+      const r = root.getBoundingClientRect();
+      const max = r.height - window.innerHeight;
+      root.style.setProperty("--sp", String(max > 0 ? Math.min(Math.max(-r.top / max, 0), 1) : 0));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  /* ----- cursor glow on cards (mouse only) ----- */
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+    const onMove = (e) => {
+      if (e.pointerType && e.pointerType !== "mouse") return;
+      const card = e.target.closest?.(".pj-card");
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+    };
+    root.addEventListener("pointermove", onMove);
+    return () => root.removeEventListener("pointermove", onMove);
+  }, []);
 
   const scrollTo = (id) => {
     const behavior = reducedMotion() ? "auto" : "smooth";
@@ -466,114 +585,199 @@ function Project() {
     event.preventDefault();
     if (activeFilter !== "All Projects") {
       setActiveFilter("All Projects");
-      setTimeout(() => scrollTo(id), 40);
+      setTimeout(() => scrollTo(id), 60);
     } else {
       scrollTo(id);
     }
   };
 
   return (
-    <main className="pj" id="top">
-      <header className="pj-hero">
-        <div className="pj-wrap">
+    <main className="pj" id="top" ref={rootRef}>
+      <div className="pj-progress" aria-hidden="true" />
+      <div className="pj-amb pj-amb-1" aria-hidden="true" />
+      <div className="pj-amb pj-amb-2" aria-hidden="true" />
+      <div className="pj-gridbg" aria-hidden="true" />
+      <div className="pj-grain" aria-hidden="true" />
+
+      {/* ============================ HERO ============================ */}
+      <header className="pj-hero pj-wrap">
+        <div className="pj-hero-copy">
+          <div className="pj-pill">
+            <i />
+            SELECTED WORK · {pad(projects.length)} PROJECTS
+          </div>
+
+          <p className="pj-kicker">PROJECTS / THINGS I&apos;VE BUILT</p>
+
           <h1>
-            <span className="pj-line">
-              <span className="l1">Ideas into</span>
-            </span>
-            <span className="pj-line">
-              <span className="l2">real-world impact.</span>
-            </span>
+            Ideas into
+            <br />
+            <span>real-world impact.</span>
           </h1>
 
-          <div className="pj-hero-lower">
-            <div className="pj-hero-copy">
-              <p className="pj-intro">
-                I build web and mobile products that solve real problems, from
-                tracking carbon emissions to planning smarter trips and resolving
-                campus complaints. Every project below links to its source code,
-                and most to a live demo.
-              </p>
+          <p className="pj-intro">
+            I build web and mobile products that solve real problems, from tracking carbon emissions
+            to planning smarter trips and resolving campus complaints. Every project below links to
+            its source code, and most to a live demo.
+          </p>
 
-              <div className="pj-hero-actions">
-                <a className="btn" href="#work" onClick={goTo("work")}>
-                  See the work
-                  <ArrowDown size={16} />
-                </a>
-                <a className="text-link" href={GITHUB} target="_blank" rel="noreferrer">
-                  GitHub profile
-                  <ArrowUpRight size={15} />
-                </a>
-              </div>
-            </div>
-
-            <nav className="pj-index" aria-label="Project index">
-              <p className="pj-index-head">
-                <span>Index</span>
-                <span>{projects.length} projects</span>
-              </p>
-              <ul>
-                {projects.map((project) => (
-                  <li key={project.id} style={accentStyle(project.accent)}>
-                    <a href={`#${project.id}`} onClick={goTo(project.id)}>
-                      <span className="ix-main">
-                        <span className="ix-name">{project.title}</span>
-                        <span className="ix-meta">{project.type}</span>
-                      </span>
-                      <span className="ix-status">
-                        <i className={`dot ${project.live ? "is-live" : ""}`} aria-hidden="true" />
-                        {project.live ? "Live" : "Source"}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+          <div className="pj-actions">
+            <a className="pj-btn primary" href="#work" onClick={goTo("work")}>
+              See the work
+              <ArrowDown size={16} />
+            </a>
+            <a className="pj-btn quiet" href={GITHUB} target="_blank" rel="noreferrer">
+              GitHub profile
+              <ArrowUpRight size={15} />
+            </a>
           </div>
         </div>
+
+        <nav className="pj-index" aria-label="Project index">
+          <p className="pj-index-head">
+            <span>INDEX</span>
+            <span>{pad(projects.length)} PROJECTS</span>
+          </p>
+          <ul>
+            {projects.map((project, i) => (
+              <li key={project.id} style={accentStyle(project.accent)}>
+                <a href={`#${project.id}`} onClick={goTo(project.id)}>
+                  <span className="pj-ix-n">{pad(i + 1)}</span>
+                  <span className="pj-ix-main">
+                    <span className="pj-ix-name">{project.title}</span>
+                    <span className="pj-ix-meta">{project.type}</span>
+                  </span>
+                  <span className="pj-ix-status">
+                    <i className={`pj-dot ${project.live ? "is-live" : ""}`} aria-hidden="true" />
+                    {project.live ? "Live" : "Source"}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </header>
 
-      <section className="pj-work" id="work">
-        <div className="pj-wrap">
-          <div className="pj-work-head">
-            <h2>Selected work</h2>
-
-            <div className="pj-tabs" role="group" aria-label="Filter projects">
-              {filters.map((filter) => (
-                <button
-                  key={filter}
-                  type="button"
-                  className={`tab ${activeFilter === filter ? "is-active" : ""}`}
-                  onClick={() => setActiveFilter(filter)}
-                  aria-pressed={activeFilter === filter}
-                >
-                  {filter}
-                  <span className="tab-count">{countFor(filter)}</span>
-                </button>
+      {/* ========================== MARQUEE ========================== */}
+      <div className="pj-marquee" aria-label="Technologies used">
+        <div className="pj-marquee-track">
+          {[0, 1].map((copy) => (
+            <div className="pj-marquee-group" key={copy} aria-hidden={copy === 1}>
+              {ALL_TECH.map((t) => (
+                <span key={t}>
+                  {t.toUpperCase()}
+                  <i>✳</i>
+                </span>
               ))}
             </div>
-          </div>
+          ))}
+        </div>
+      </div>
 
+      {/* ========================== STATS ========================== */}
+      <div className="pj-wrap pj-stats-wrap">
+        <div className="pj-stats" data-pj>
+          <div className="pj-stat">
+            <strong>
+              <Count to={projects.length} />
+            </strong>
+            <span>Projects built</span>
+          </div>
+          <div className="pj-stat">
+            <strong>
+              <Count to={LIVE_COUNT} />
+            </strong>
+            <span>Live demos</span>
+          </div>
+          <div className="pj-stat">
+            <strong>
+              <Count to={ALL_TECH.length} />
+            </strong>
+            <span>Technologies</span>
+          </div>
+          <div className="pj-stat">
+            <strong>
+              <Count to={projects.length} />
+            </strong>
+            <span>Open source repos</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ============================ WORK ============================ */}
+      <section className="pj-work pj-wrap" id="work">
+        <div className="pj-label" data-pj>
+          <span>01</span> / SELECTED WORK
+          <i />
+        </div>
+
+        <div className="pj-work-head" data-pj>
+          <h2>
+            Built to be used,
+            <br />
+            <em>not just shown.</em>
+          </h2>
+
+          <div className="pj-tabs" role="group" aria-label="Filter projects">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                className={`pj-tab ${activeFilter === filter ? "is-active" : ""}`}
+                onClick={() => setActiveFilter(filter)}
+                aria-pressed={activeFilter === filter}
+              >
+                {filter}
+                <span className="pj-tab-count">{countFor(filter)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="pj-cases" key={activeFilter}>
           {visible.map((project, index) => (
-            <Case key={project.id} project={project} flip={index % 2 === 1} />
+            <Case
+              key={project.id}
+              project={project}
+              index={index}
+              total={visible.length}
+              flip={index % 2 === 1}
+            />
           ))}
         </div>
       </section>
 
-      <section className="pj-more">
-        <div className="pj-wrap">
-          <p>There is more on GitHub: source code, experiments and smaller repositories.</p>
-          <a
-            className="pj-more-link"
-            href={`${GITHUB}?tab=repositories`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span>Browse all repositories</span>
-            <ArrowUpRight aria-hidden="true" />
-          </a>
+      {/* ============================ MORE ============================ */}
+      <section className="pj-wrap pj-more-wrap">
+        <div className="pj-more" data-pj>
+          <p className="pj-kicker lime">THERE&apos;S MORE</p>
+          <h2>
+            Want to see
+            <br />
+            <span>all the code?</span>
+          </h2>
+          <p className="pj-more-text">
+            There is more on GitHub: source code, experiments and smaller repositories.
+          </p>
+          <div className="pj-actions">
+            <a
+              className="pj-btn primary"
+              href={`${GITHUB}?tab=repositories`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Browse all repositories
+              <ArrowUpRight size={16} />
+            </a>
+            <a className="pj-btn quiet" href={GITHUB} target="_blank" rel="noreferrer">
+              GitHub profile
+              <ArrowUpRight size={15} />
+            </a>
+          </div>
         </div>
       </section>
 
+      {/* =========================== FOOTER =========================== */}
       <footer className="pj-footer">
         <div className="pj-wrap pj-footer-row">
           <a
@@ -585,18 +789,18 @@ function Project() {
             }}
             aria-label="Back to top"
           >
-            K.
+            K<span>.</span>
           </a>
           <a
-            className="text-link"
+            className="pj-top"
             href="#top"
             onClick={(event) => {
               event.preventDefault();
               scrollTo(null);
             }}
           >
-            Back to top
-            <ArrowUp size={15} />
+            BACK TO TOP
+            <ArrowUp size={14} />
           </a>
         </div>
       </footer>
